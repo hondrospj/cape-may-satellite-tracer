@@ -186,13 +186,16 @@ async function exportImage() {
   const m=maps[activeDate],map=m.map,format=$('image-format').value;
   if(!m.ready||m.failed)return;
   setMode('pan');exporting=true;updateAvailability();renderTraces();
-  const target=map.getTarget(),size=map.getSize().map(Math.round),extent=view.calculateExtent(size),date=activeDate;
+  const target=map.getTarget(),size=map.getSize().map(Math.round),date=activeDate;
+  // Snapshot the view so panning the companion map cannot change export georeferencing.
+  const exportView=new View({projection:view.getProjection(),center:view.getCenter().slice(),resolution:view.getResolution(),rotation:0});
+  const extent=exportView.calculateExtent(size);
   const canvas=document.createElement('canvas');canvas.width=size[0];canvas.height=size[1];
   const vectorVisible=m.vectors.getVisible(),townVisible=m.towns.getVisible();
   toast('Preparing your image…',65000);
   try {
     if(format!=='png'){m.vectors.setVisible(false);m.towns.setVisible(false);}
-    map.setTarget(canvas);map.setSize(size);await waitForRender(map);
+    map.setView(exportView);map.setTarget(canvas);map.setSize(size);await waitForRender(map);
     if(m.failed)throw new Error('A source tile failed to load. Reload the imagery before exporting.');
     const base=`cape-may-${date}`,manifest={...metadata(date),exported_at:new Date().toISOString(),projection:'EPSG:3857',extent_m:extent,width:size[0],height:size[1],pixel_size_projection_m:[(extent[2]-extent[0])/size[0],(extent[3]-extent[1])/size[1]],resampled:true,source_pixel_size_m:10,rotation_degrees:0,includes_traces:format==='png',note:'Visible map extent resampled from source imagery; zoom does not improve the 10 m source resolution.'};
     if(format==='png') {
@@ -211,7 +214,7 @@ async function exportImage() {
     }
     toast('Image exported.');
   } catch(error){console.error(error);toast(error.message,10000);}
-  finally {map.setTarget(target);m.vectors.setVisible(vectorVisible);m.towns.setVisible(townVisible);map.updateSize();exporting=false;updateAvailability();renderTraces();}
+  finally {map.setView(view);map.setTarget(target);m.vectors.setVisible(vectorVisible);m.towns.setVisible(townVisible);map.updateSize();exporting=false;updateAvailability();renderTraces();}
 }
 
 function sceneInfo() {

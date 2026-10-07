@@ -1,6 +1,6 @@
 {
-  "source": "Earth Search / Copernicus Sentinel-2 L2A",
-  "retrieved_at": "2026-10-07T02:02:56.781756+00:00",
+  "source": "Copernicus Sentinel-2 L2A",
+  "retrieved_at": "2026-10-07T02:39:01.021040+00:00",
   "bbox": [
     -75.1,
     38.85,
@@ -93,92 +93,102 @@
           "stac": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2B_18SWJ_20251016_0_L2A",
           "gsd_m": 10
         }
-      ]
+      ],
+      "provider": "Earth Search",
+      "source": "Copernicus Sentinel-2 L2A / Element 84 Earth Search"
     },
     {
-      "date": "2026-02-28",
+      "date": "2026-10-06",
+      "provider": "Copernicus Data Space",
+      "source": "Copernicus Sentinel-2 L2A / Copernicus Data Space",
       "scenes": [
         {
-          "id": "S2C_18SVJ_20260228_0_L2A",
-          "datetime": "2026-02-28T16:02:21.142000Z",
-          "cloud_cover_percent": 0.010355,
+          "id": "S2C_MSIL2A_20261006T155131_N0513_R054_T18SVJ_20261006T185302",
+          "datetime": "2026-10-06T16:02:21.57169Z",
+          "cloud_cover_percent": 0.004078,
           "bbox": [
-            -76.167613,
-            38.755203,
-            -74.886086,
-            39.750203
+            -75.1007258308636,
+            38.84993560577927,
+            -74.88674148372536,
+            39.3410570706575
           ],
           "geometry": {
             "type": "Polygon",
             "coordinates": [
               [
                 [
-                  -76.16761290616306,
-                  39.74438631043687
+                  -74.88674148372536,
+                  39.341045550393424
                 ],
                 [
-                  -76.15132112032013,
-                  38.755202928221415
+                  -74.88752440091108,
+                  38.84993560577927
                 ],
                 [
-                  -74.88767593356906,
-                  38.760819498079734
+                  -75.10002954744822,
+                  38.84994692731049
                 ],
                 [
-                  -74.88608605736992,
-                  39.7502030226425
+                  -75.1007258308636,
+                  39.3410570706575
                 ],
                 [
-                  -76.16761290616306,
-                  39.74438631043687
+                  -74.88674148372536,
+                  39.341045550393424
                 ]
               ]
             ]
           },
-          "visual": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/VJ/2026/2/S2C_18SVJ_20260228_0_L2A/TCI.tif",
-          "stac": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2C_18SVJ_20260228_0_L2A",
-          "gsd_m": 10
+          "visual": "./data/2026-10-06-18SVJ-10m.tif",
+          "asset_label": "Native 10 m county crop \u00b7 GeoTIFF",
+          "stac": "https://stac.dataspace.copernicus.eu/v1/collections/sentinel-2-l2a/items/S2C_MSIL2A_20261006T155131_N0513_R054_T18SVJ_20261006T185302",
+          "gsd_m": 10,
+          "sha256": "f0ac0c0aaee832a7ae1eb90198e79409394e476783577fe6e0c83f61dc33e537",
+          "provenance": "./data/2026-10-06-18SVJ-provenance.json"
         },
         {
-          "id": "S2C_18SWJ_20260228_0_L2A",
-          "datetime": "2026-02-28T16:02:17.185000Z",
-          "cloud_cover_percent": 0.192549,
+          "id": "S2C_MSIL2A_20261006T155131_N0513_R054_T18SWJ_20261006T185302",
+          "datetime": "2026-10-06T16:02:17.613299Z",
+          "cloud_cover_percent": 0.010161,
           "bbox": [
-            -75.000222,
-            38.761079,
-            -74.119047,
-            39.750259
+            -75.00023208733577,
+            38.848919498609504,
+            -74.4964956258112,
+            39.34110065349467
           ],
           "geometry": {
             "type": "Polygon",
             "coordinates": [
               [
                 [
-                  -75.0002217816295,
-                  39.750258916394806
+                  -74.4964956258112,
+                  39.34001160721469
                 ],
                 [
-                  -75.00021868900606,
-                  38.7617746534393
+                  -74.49997601008836,
+                  38.848919498609504
                 ],
                 [
-                  -74.46251734268604,
-                  38.76107859260799
+                  -75.00023048299167,
+                  38.8499897583117
                 ],
                 [
-                  -74.11904695444451,
-                  39.74691597279379
+                  -75.00023208733577,
+                  39.34110065349467
                 ],
                 [
-                  -75.0002217816295,
-                  39.750258916394806
+                  -74.4964956258112,
+                  39.34001160721469
                 ]
               ]
             ]
           },
-          "visual": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/WJ/2026/2/S2C_18SWJ_20260228_0_L2A/TCI.tif",
-          "stac": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2C_18SWJ_20260228_0_L2A",
-          "gsd_m": 10
+          "visual": "./data/2026-10-06-18SWJ-10m.tif",
+          "asset_label": "Native 10 m county crop \u00b7 GeoTIFF",
+          "stac": "https://stac.dataspace.copernicus.eu/v1/collections/sentinel-2-l2a/items/S2C_MSIL2A_20261006T155131_N0513_R054_T18SWJ_20261006T185302",
+          "gsd_m": 10,
+          "sha256": "b19fc3a216a17f08d8d59e070aca6e060c8cfcc6c85a42eaf9bbac5a73df6f07",
+          "provenance": "./data/2026-10-06-18SWJ-provenance.json"
         }
       ]
     }

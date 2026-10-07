@@ -1,0 +1,29 @@
+{
+  "source_asset": "s3://eodata/Sentinel-2/MSI/L2A/2026/10/06/S2C_MSIL2A_20261006T155131_N0513_R054_T18SVJ_20261006T185302.SAFE/GRANULE/L2A_T18SVJ_A010892_20261006T160043/IMG_DATA/R10m/T18SVJ_20261006T155131_TCI_10m.jp2",
+  "source_asset_sha256": "61b5bd940398282ae122418c3d4a8f3b273d9562caf4c8ef766534f39e2adbc9",
+  "source_catalog_multihash": "1620ee43b575bf7e21f021861649f771d22f02105b398b35cba2ac33933cc6664d11",
+  "source_archive": "S2C_MSIL2A_20261006T155131_N0513_R054_T18SVJ_20261006T185302.SAFE.zip",
+  "granule_sensing_time": "2026-10-06T16:02:21.57169Z",
+  "source_window_pixels": [
+    9136,
+    4541,
+    1844,
+    5450
+  ],
+  "projection": "EPSG:32618",
+  "geotransform": [
+    491320.0,
+    10.0,
+    0.0,
+    4354630.0,
+    0.0,
+    -10.0
+  ],
+  "shape": [
+    5450,
+    1844
+  ],
+  "processing": "Native 10 m pixel-aligned crop; identical RGB values verified against original JP2; lossless DEFLATE COG; nearest-neighbor overviews. No base-image resampling or color adjustment.",
+  "sha256": "f0ac0c0aaee832a7ae1eb90198e79409394e476783577fe6e0c83f61dc33e537",
+  "bytes": 21451375
+}

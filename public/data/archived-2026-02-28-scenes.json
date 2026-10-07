@@ -1,0 +1,87 @@
+{
+  "date": "2026-02-28",
+  "scenes": [
+    {
+      "id": "S2C_18SVJ_20260228_0_L2A",
+      "datetime": "2026-02-28T16:02:21.142000Z",
+      "cloud_cover_percent": 0.010355,
+      "bbox": [
+        -76.167613,
+        38.755203,
+        -74.886086,
+        39.750203
+      ],
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -76.16761290616306,
+              39.74438631043687
+            ],
+            [
+              -76.15132112032013,
+              38.755202928221415
+            ],
+            [
+              -74.88767593356906,
+              38.760819498079734
+            ],
+            [
+              -74.88608605736992,
+              39.7502030226425
+            ],
+            [
+              -76.16761290616306,
+              39.74438631043687
+            ]
+          ]
+        ]
+      },
+      "visual": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/VJ/2026/2/S2C_18SVJ_20260228_0_L2A/TCI.tif",
+      "stac": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2C_18SVJ_20260228_0_L2A",
+      "gsd_m": 10
+    },
+    {
+      "id": "S2C_18SWJ_20260228_0_L2A",
+      "datetime": "2026-02-28T16:02:17.185000Z",
+      "cloud_cover_percent": 0.192549,
+      "bbox": [
+        -75.000222,
+        38.761079,
+        -74.119047,
+        39.750259
+      ],
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.0002217816295,
+              39.750258916394806
+            ],
+            [
+              -75.00021868900606,
+              38.7617746534393
+            ],
+            [
+              -74.46251734268604,
+              38.76107859260799
+            ],
+            [
+              -74.11904695444451,
+              39.74691597279379
+            ],
+            [
+              -75.0002217816295,
+              39.750258916394806
+            ]
+          ]
+        ]
+      },
+      "visual": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/18/S/WJ/2026/2/S2C_18SWJ_20260228_0_L2A/TCI.tif",
+      "stac": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2C_18SWJ_20260228_0_L2A",
+      "gsd_m": 10
+    }
+  ]
+}

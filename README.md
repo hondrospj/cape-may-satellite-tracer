@@ -1,6 +1,6 @@
 # Coastline Studio — Cape May County
 
-A browser-only satellite comparison, shoreline tracing and GIS export app for **October 16, 2025** and **February 28, 2026**. Designed for GitHub Pages, with no accounts, API keys, private data, or backend.
+A browser-only satellite comparison, shoreline tracing and GIS export app for **October 16, 2025** and **October 6, 2026**. Designed for GitHub Pages, with no accounts, API keys, private data, or backend.
 
 ## Use
 
@@ -14,11 +14,13 @@ On small screens, **Tools** opens the sidebar. Comparison stacks the maps vertic
 
 ## Imagery and limits
 
-`public/data/scenes.json` pins four real Sentinel-2 L2A scene assets from the public Earth Search STAC catalog. The complete returned STAC FeatureCollections are retained beside it. There are two adjacent UTM 18N tiles per day, captured around 16:02 UTC. The app fetches byte ranges of public cloud-optimized true-color GeoTIFFs, streaming just the needed raster blocks rather than downloading full scenes. The About dialog links to original COGs and source scene metadata.
+`public/data/scenes.json` pins four real Sentinel-2 L2A scene assets. The 2025 scenes use Earth Search; the exact October 6, 2026 scenes were retrieved from Copernicus Data Space through its signed-in browser. The complete returned STAC FeatureCollections are retained beside it. There are two adjacent UTM 18N tiles per day, captured around 16:02 UTC. The app fetches byte ranges of public cloud-optimized true-color GeoTIFFs, streaming just the needed raster blocks rather than downloading full scenes. The About dialog links to native imagery and source scene metadata. The 2026 COGs are lossless county crops on the original 10 m UTM 18N grid, with pixel equality checked against the original JP2 data. Source hashes, crop windows, tile sensing times, and processing details are retained beside the assets. `scripts/prepare_october_2026.py` reproduces the crops from the original SAFE downloads.
 
 The true-color source has 10 m pixels; extra zoom does not add detail. Displayed and exported map views are reprojected/resampled. Water level, waves, snow/ice, shadows, season and image registration affect the apparent waterline. These traces are manual interpretations and **not surveyed, tide-normalized shorelines or erosion measurements**. Tile-wide cloud percentages describe the full scenes rather than every local pixel. Outside the dated scene footprints, no substitute satellite basemap is shown. Internet and WebGL are required. Source outages are surfaced in the map and prevent exports.
 
-Contains modified Copernicus Sentinel data (2025, 2026), hosted by Element 84 Earth Search.
+Contains modified Copernicus Sentinel data (2025, 2026), provided through Element 84 Earth Search and Copernicus Data Space.
+
+Traces saved against the previously offered February 28, 2026 image remain in browser storage and exports with their original dates. They are labeled archived, hidden on the new maps, and cannot be edited against a different date.
 
 ## Develop and publish
 

@@ -24,7 +24,7 @@ import {DATES, WKT_3857, worldfile, toKML, toCSV, validateImport, encodeGeoTIFF}
 
 const $=id=>document.getElementById(id);
 const COLOR={[DATES[0]]:'#e9b751',[DATES[1]]:'#61dfd6'};
-const DATE_LABEL={[DATES[0]]:'October 16, 2025',[DATES[1]]:'February 28, 2026'};
+const DATE_LABEL={[DATES[0]]:'October 16, 2025',[DATES[1]]:'October 6, 2026'};
 const STORE='coastline-studio-cape-may-v1';
 const countyExtent=transformExtent([-75.08,38.90,-74.53,39.32],'EPSG:4326','EPSG:3857');
 const places={
@@ -51,6 +51,7 @@ function toast(message,ms=5500) {
 }
 function lengthText(m){return m>=1000?`${(m/1000).toFixed(2)} km`:`${Math.round(m)} m`;}
 function lineStyle(feature) {
+  if(!DATES.includes(feature.get('image_date')))return null;
   if (!$('show-both').checked && feature.get('image_date')!==this.get('image_date')) return null;
   const isSelected=feature===selected;
   const styles=[new Style({stroke:new Stroke({color:'#132d35c9',width:isSelected?6:5})}),new Style({stroke:new Stroke({color:COLOR[feature.get('image_date')]||'#fff',width:isSelected?3.5:2.5})})];
@@ -60,7 +61,7 @@ function lineStyle(feature) {
 function redraw(){Object.values(maps).forEach(m=>m.vectors.changed());}
 function metadata(date) {
   const d=catalog.dates.find(d=>d.date===date);
-  return {image_date:date,source:'Copernicus Sentinel-2 L2A / Element 84 Earth Search',imagery_resolution_m:10,scene_ids:d.scenes.map(s=>s.id),capture_times_utc:d.scenes.map(s=>s.datetime),source_urls:d.scenes.map(s=>s.visual),interpretation:'Manually traced visible feature; not surveyed or tide-normalized'};
+  return {image_date:date,source:d.source||catalog.source,imagery_resolution_m:10,scene_ids:d.scenes.map(s=>s.id),capture_times_utc:d.scenes.map(s=>s.datetime),source_urls:d.scenes.map(s=>new URL(s.visual,document.baseURI).href),source_metadata_urls:d.scenes.map(s=>s.stac),source_sha256:d.scenes.map(s=>s.sha256||null),interpretation:'Manually traced visible feature; not surveyed or tide-normalized'};
 }
 function featureCollection() {
   for (const f of vectorSource.getFeatures()) f.set('length_m',Math.round(getLength(f.getGeometry())*100)/100,true);
@@ -77,6 +78,8 @@ function selectFeature(f) {
   selected=f;selectedFeatures.clear();if(f)selectedFeatures.push(f);
   $('selection-tools').hidden=!f;
   if(f)$('trace-name').value=f.get('name')||'Untitled line';
+  $('edit-line').disabled=!!f&&!DATES.includes(f.get('image_date'));
+  $('edit-line').title=$('edit-line').disabled?'The original image is archived; this trace remains exportable.':'';
   renderTraces();redraw();
 }
 function renderTraces() {
@@ -88,10 +91,10 @@ function renderTraces() {
     $('trace-list').replaceChildren();
     for(const f of features) {
       const button=document.createElement('button');button.className='trace-item'+(f===selected?' selected':'');button.setAttribute('aria-pressed',String(f===selected));
-      const swatch=document.createElement('span');swatch.className='line-swatch';swatch.style.borderColor=COLOR[f.get('image_date')];
+      const swatch=document.createElement('span');swatch.className='line-swatch';swatch.style.borderColor=COLOR[f.get('image_date')]||'#a4aeb3';
       const body=document.createElement('span'),name=document.createElement('b'),sub=document.createElement('small');
-      name.textContent=f.get('name');sub.textContent=`${f.get('image_date')} · ${lengthText(getLength(f.getGeometry()))}`;body.append(name,sub);button.append(swatch,body);
-      button.addEventListener('click',()=>{setMode('pan');setDate(f.get('image_date'));selectFeature(f);});$('trace-list').append(button);
+      name.textContent=f.get('name');sub.textContent=`${f.get('image_date')} · ${lengthText(getLength(f.getGeometry()))}${DATES.includes(f.get('image_date'))?'':' · archived image'}`;body.append(name,sub);button.append(swatch,body);
+      button.addEventListener('click',()=>{setMode('pan');setDate(f.get('image_date'));selectFeature(f);if(!DATES.includes(f.get('image_date')))toast('This February trace is preserved for export. Its original imagery is no longer displayed.');});$('trace-list').append(button);
     }
   }
 }
@@ -138,7 +141,7 @@ function makeMap(date,index) {
   const footprints=data.scenes.map(s=>geojson.readFeature({type:'Feature',geometry:s.geometry,properties:{}},{featureProjection:'EPSG:3857'}));
   const rasters=data.scenes.map(s=>{
     const source=new GeoTIFF({sources:[{url:s.visual,nodata:0,min:0,max:255}],interpolate:false,convertToRGB:false,sourceOptions:{blockSize:65536,cacheSize:200}});
-    source.setAttributions('Contains modified Copernicus Sentinel data · '+date.slice(0,4)+' · Earth Search');
+    source.setAttributions('Contains modified Copernicus Sentinel data · '+date.slice(0,4)+' · '+(data.provider||'Earth Search'));
     return new WebGLTile({source,preload:0,transition:0});
   });
   const vectors=new VectorLayer({source:vectorSource,image_date:date});vectors.setStyle(lineStyle.bind(vectors));
@@ -201,7 +204,7 @@ async function exportImage() {
     if(format==='png') {
       const output=document.createElement('canvas');output.width=canvas.width;output.height=canvas.height+54;const ctx=output.getContext('2d');ctx.fillStyle='#153d3e';ctx.fillRect(0,0,output.width,output.height);ctx.drawImage(canvas,0,0);
       ctx.fillStyle='#effbf2';ctx.font='600 12px sans-serif';ctx.fillText(`Cape May County · ${DATE_LABEL[date]} · Sentinel-2 · 10 m source`,12,canvas.height+21);
-      ctx.font='10px sans-serif';ctx.fillStyle='#b4d6cc';ctx.fillText(`Contains modified Copernicus Sentinel data (${date.slice(0,4)}) / Earth Search · Traces are not surveyed`,12,canvas.height+40);
+      ctx.font='10px sans-serif';ctx.fillStyle='#b4d6cc';ctx.fillText(`Contains modified Copernicus Sentinel data (${date.slice(0,4)}) · Traces are not surveyed`,12,canvas.height+40);
       download(await canvasBlob(output),base+'-map.png');
     } else if(format==='geotiff') {
       const pixels=canvas.getContext('2d').getImageData(0,0,size[0],size[1]);
@@ -223,7 +226,7 @@ function sceneInfo() {
     for(const scene of d.scenes){
       const p=document.createElement('p');p.textContent=`${scene.id} · ${scene.datetime.slice(11,19)} UTC · ${scene.cloud_cover_percent.toFixed(3)}% tile-wide cloud cover`;
       const links=document.createElement('div');links.className='scene-links';
-      for(const [label,url] of [['Full-scene GeoTIFF',scene.visual],['Scene metadata',scene.stac]]){if(!url)continue;const a=document.createElement('a');a.textContent=label;a.href=url;a.target='_blank';a.rel='noopener';links.append(a);}
+      for(const [label,url] of [[scene.asset_label||'Full-scene GeoTIFF',scene.visual],['Scene metadata',scene.stac],['Crop provenance',scene.provenance]]){if(!url)continue;const a=document.createElement('a');a.textContent=label;a.href=url;a.target='_blank';a.rel='noopener';links.append(a);}
       block.append(p,links);
     }
     $('scene-details').append(block);
@@ -243,7 +246,7 @@ function bindControls() {
   $('show-both').addEventListener('change',redraw);
   $('town-labels').addEventListener('change',()=>Object.values(maps).forEach(m=>m.towns.setVisible($('town-labels').checked)));
   $('trace-name').addEventListener('input',()=>{if(!selected)return;selected.set('name',$('trace-name').value.trim()||'Untitled line');selected.set('updated_utc',new Date().toISOString());save();renderTraces();});
-  $('edit-line').addEventListener('click',()=>{if(!selected)return;if(selected.get('image_date')!==activeDate)setDate(selected.get('image_date'));setMode(mode==='edit'?'pan':'edit');});
+  $('edit-line').addEventListener('click',()=>{if(!selected||!DATES.includes(selected.get('image_date')))return;if(selected.get('image_date')!==activeDate)setDate(selected.get('image_date'));setMode(mode==='edit'?'pan':'edit');});
   $('zoom-line').addEventListener('click',()=>{if(selected)view.fit(selected.getGeometry(),{size:maps[activeDate].map.getSize(),padding:[80,80,80,80],maxZoom:17,duration:250});});
   $('delete-line').addEventListener('click',()=>{if(!selected)return;const removed=selected;setMode('pan');selectFeature(null);vectorSource.removeFeature(removed);save();renderTraces();toast('Line deleted. Ctrl/Cmd+Z restores the last deleted line.');lastDeleted=removed;});
   $('import').addEventListener('click',()=>$('import-file').click());
@@ -256,7 +259,7 @@ function bindControls() {
       for(const f of features){
         const date=f.get('image_date')||activeDate,original={...f.getProperties()};delete original.geometry;
         if(!f.getId()||vectorSource.getFeatureById(f.getId()))f.setId(crypto.randomUUID());
-        f.setProperties({...metadata(date),...original,image_date:date,name:String(original.name||'Imported line').slice(0,100),created_utc:original.created_utc||new Date().toISOString(),updated_utc:original.updated_utc||new Date().toISOString(),imported:true});
+        f.setProperties({...(DATES.includes(date)?metadata(date):{}),...original,image_date:date,name:String(original.name||'Imported line').slice(0,100),created_utc:original.created_utc||new Date().toISOString(),updated_utc:original.updated_utc||new Date().toISOString(),imported:true});
         if(!original.image_date)f.set('interpretation','Imported geometry; selected date is a reference image, not evidence of when this line was traced.');
       }
       vectorSource.addFeatures(features);save();renderTraces();if(features.length)selectFeature(features[0]);toast(`${features.length} line(s) imported. Lines without a date use the selected imagery date.`);

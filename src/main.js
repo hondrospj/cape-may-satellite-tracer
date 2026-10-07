@@ -22,6 +22,8 @@ import proj4 from 'proj4';
 import {zipSync, strToU8} from 'fflate';
 import {DATES, WKT_3857, worldfile, toKML, toCSV, validateImport, encodeGeoTIFF} from './exports.js';
 
+import {selectExportLines,toShapefileZip} from './shapefile.js';
+
 const $=id=>document.getElementById(id);
 const COLOR={[DATES[0]]:'#e9b751',[DATES[1]]:'#61dfd6'};
 const DATE_LABEL={[DATES[0]]:'October 16, 2025',[DATES[1]]:'October 6, 2026'};
@@ -71,8 +73,8 @@ function featureCollection() {
 }
 function save() {
   if(restoring)return;
-  try {localStorage.setItem(STORE,JSON.stringify(featureCollection()));$('save-status').textContent='✓ Saved in this browser';}
-  catch {$('save-status').textContent='Local save unavailable — export your lines';toast('Your browser could not save these lines. Export GeoJSON to keep a copy.');}
+  try {localStorage.setItem(STORE,JSON.stringify(featureCollection()));$('save-status').textContent='✓ Saved in this browser';return true;}
+  catch {$('save-status').textContent='Local save unavailable — export your lines';toast('Your browser could not save these lines. Export a file to keep a copy.');return false;}
 }
 function selectFeature(f) {
   selected=f;selectedFeatures.clear();if(f)selectedFeatures.push(f);
@@ -84,7 +86,8 @@ function selectFeature(f) {
 }
 function renderTraces() {
   const features=vectorSource.getFeatures();$('trace-count').textContent=features.length;
-  $('export-lines').disabled=!features.length||exporting;
+  $('export-lines').disabled=exporting||!features.length||($('line-scope').value==='selected'&&!selected);
+  $('line-export-help').textContent=$('line-scope').value==='selected'?(selected?'Only the selected line will export.':'Select a saved line to export it.'):`All ${features.length} saved lines will export.`;
   if(!features.length) {
     $('trace-list').innerHTML='<div class="empty-state"><svg viewBox="0 0 100 40" aria-hidden="true"><path d="m2 33 18-9 13 4 17-19 21 11 26-14"/><circle cx="2" cy="33" r="3"/><circle cx="50" cy="9" r="3"/><circle cx="97" cy="6" r="3"/></svg><p>Your shoreline starts here.</p><small>Draw a line to save it to this browser.</small></div>';
   } else {
@@ -265,10 +268,22 @@ function bindControls() {
       vectorSource.addFeatures(features);save();renderTraces();if(features.length)selectFeature(features[0]);toast(`${features.length} line(s) imported. Lines without a date use the selected imagery date.`);
     }catch(error){toast('Import failed: '+error.message,9000);}finally{event.target.value='';}
   });
+  $('save-line').addEventListener('click',()=>{if(!selected)return;setMode('pan');if(save())toast('Line saved in this browser. Export it to keep a file copy.');});
+  $('line-scope').addEventListener('change',renderTraces);
   $('export-lines').addEventListener('click',()=>{
-    const fc=featureCollection();if(!fc.features.length)return;const format=$('line-format').value;
-    const text=format==='geojson'?JSON.stringify(fc,null,2):format==='kml'?toKML(fc):toCSV(fc);
-    const mime={geojson:'application/geo+json',kml:'application/vnd.google-earth.kml+xml',csv:'text/csv'}[format];download(new Blob([text],{type:mime}),'cape-may-shorelines.'+format);toast(`Exported ${fc.features.length} line(s) with dates and source metadata.`);
+    try {
+      const scope=$('line-scope').value,fc=selectExportLines(featureCollection(),scope,selected?.getId());
+      if(!fc.features.length)return;
+      const format=$('line-format').value,first=fc.features[0];
+      const name=scope==='selected'?`${String(first.properties.name||'shoreline').normalize('NFKD').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'shoreline'}-${first.properties.image_date}`:'cape-may-shorelines';
+      if(format==='shp')download(new Blob([toShapefileZip(fc)],{type:'application/zip'}),name+'.shp.zip');
+      else {
+        const text=format==='geojson'?JSON.stringify(fc,null,2):format==='kml'?toKML(fc):toCSV(fc);
+        const mime={geojson:'application/geo+json',kml:'application/vnd.google-earth.kml+xml',csv:'text/csv'}[format];
+        download(new Blob([text],{type:mime}),name+'.'+format);
+      }
+      toast(`Exported ${fc.features.length} line${fc.features.length===1?'':'s'}${format==='shp'?' as a shapefile ZIP':''}.`);
+    }catch(error){toast('Export failed: '+error.message,9000);}
   });
   $('export-image').addEventListener('click',exportImage);
   $('about-button').addEventListener('click',()=>$('about').showModal());$('close-about').addEventListener('click',()=>$('about').close());

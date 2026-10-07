@@ -5,9 +5,9 @@ A browser-only satellite comparison, shoreline tracing and GIS export app for **
 ## Use
 
 1. Choose a date and a town, or use **Compare side by side**. Both maps share their center and zoom.
-2. Choose **Draw a new line**, click along the shoreline, and double-click or use **Finish line**. Undo a point with the button or Ctrl/Cmd+Z; Esc cancels.
-3. Select a line to name it, edit vertices, zoom to it or delete it. Ctrl/Cmd+Z restores the most recently deleted line until reload.
-4. Export all lines as GeoJSON, KML or CSV. GeoJSON is the lossless project backup and can be imported again. Traces are stored only in the current browser's local storage.
+2. Choose **Draw a new line**, click along the shoreline, and double-click or use **Finish & save**. Undo a point with the button or Ctrl/Cmd+Z; Esc cancels.
+3. Each finished line saves automatically in this browser. Select a line to name it, edit vertices, use **Save line**, zoom to it or delete it. Ctrl/Cmd+Z restores the most recently deleted line until reload.
+4. Choose **Selected line** (the default) to export just one saved trace, or **All saved lines** for the complete collection. Choose Shapefile (SHP ZIP), GeoJSON, KML or CSV. Unzip a shapefile export and keep `traces.shp`, `.shx`, `.dbf`, `.prj` and `.cpg` together when opening it in GIS software. The ZIP includes a complete GeoJSON backup with full source metadata; DBF text fields are limited to 254 bytes. GeoJSON is the lossless project backup and can be imported again. Traces are stored only in the current browser's local storage.
 5. Export the active date's current extent as an annotated PNG, RGBA GeoTIFF, or a PNG + worldfile/projection/metadata ZIP.
 
 On small screens, **Tools** opens the sidebar. Comparison stacks the maps vertically. Pinch and the +/− controls zoom. Geographic exports use WGS 84 longitude, latitude. Raster exports use EPSG:3857; worldfiles locate pixel centers, while GeoTIFF tiepoints locate pixel-area corners. Georeferenced raster exports exclude trace overlays and labels. The annotated PNG is a map illustration, not a georeferenced raster.

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#123f40" />
+    <meta name="description" content="Compare Cape May County satellite imagery from October 16, 2025 and February 28, 2026. Trace shorelines and export georeferenced imagery and polylines." />
+    <title>Coastline Studio · Cape May County</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <a class="brand" href="./" aria-label="Coastline Studio home"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 30 13 21 20 24 28 10 35 7"/><path d="m5 20 7-8 8 4 6-11"/></svg><span>Coastline <b>Studio</b><small>CAPE MAY COUNTY, NEW JERSEY</small></span></a>
+        <div class="header-right"><span class="source-badge"><i></i> SENTINEL-2 · 10 M</span><button id="about-button" class="quiet">About the imagery</button><button id="tools-toggle" class="quiet mobile-only" aria-expanded="false">Tools</button></div>
+      </header>
+      <main class="workspace">
+        <aside id="sidebar" aria-label="Tracing tools">
+          <div class="sidebar-scroll">
+            <div class="eyebrow">01 / CHOOSE YOUR IMAGE</div>
+            <div class="date-options" role="group" aria-label="Active imagery date">
+              <button class="date-option" data-date="2025-10-16" aria-pressed="false"><span class="date-dot earlier"></span><span><b>October 16, 2025</b><small>Earlier image</small></span><span class="check">✓</span></button>
+              <button class="date-option active" data-date="2026-02-28" aria-pressed="true"><span class="date-dot later"></span><span><b>February 28, 2026</b><small>Later image</small></span><span class="check">✓</span></button>
+            </div>
+            <button id="compare" class="compare-button" aria-pressed="false"><span aria-hidden="true">◧</span> Compare side by side</button>
+            <label class="field-label" for="place">Go to</label>
+            <select id="place"><option value="county">All of Cape May County</option><option value="cape-may">Cape May</option><option value="wildwood">Wildwood</option><option value="north-wildwood">North Wildwood</option><option value="stone-harbor">Stone Harbor</option><option value="avalon">Avalon</option><option value="sea-isle">Sea Isle City</option><option value="ocean-city">Ocean City</option><option value="delaware-bay">Delaware Bay shore</option></select>
+            <div class="section-heading"><span class="eyebrow">02 / TRACE THE SHORELINE</span><kbd>D</kbd></div>
+            <button id="draw" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 18 6-10 7 7 4-11"/><circle cx="4" cy="18" r="2"/><circle cx="10" cy="8" r="2"/><circle cx="17" cy="15" r="2"/></svg> Draw a new line</button>
+            <div id="draw-actions" class="draw-actions" hidden><button id="undo-vertex" class="secondary" disabled>Undo point</button><button id="finish" class="primary" disabled>Finish line</button><button id="cancel-draw" class="quiet">Cancel</button></div>
+            <p id="draw-help" class="help">Click along the shoreline. Double-click the last point to finish.</p>
+            <div class="section-heading"><span class="eyebrow">YOUR TRACES</span><span id="trace-count" class="count">0</span></div>
+            <label class="checkbox-label"><input id="show-both" type="checkbox" checked /> Show lines from both dates</label>
+            <div id="trace-list" class="trace-list"><div class="empty-state"><svg viewBox="0 0 100 40" aria-hidden="true"><path d="m2 33 18-9 13 4 17-19 21 11 26-14"/><circle cx="2" cy="33" r="3"/><circle cx="50" cy="9" r="3"/><circle cx="97" cy="6" r="3"/></svg><p>Your shoreline starts here.</p><small>Draw a line to save it to this browser.</small></div></div>
+            <div id="selection-tools" hidden>
+              <label for="trace-name" class="field-label">Line name</label><input id="trace-name" type="text" maxlength="100" />
+              <div class="button-row"><button id="edit-line" class="secondary" aria-pressed="false">Edit points</button><button id="zoom-line" class="secondary">Zoom to line</button><button id="delete-line" class="icon-button danger" aria-label="Delete selected line" title="Delete selected line">×</button></div>
+            </div>
+            <button id="import" class="text-button">＋ Import GeoJSON</button><input id="import-file" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden />
+          </div>
+          <div class="export-panel">
+            <div class="eyebrow">03 / TAKE IT WITH YOU</div>
+            <div class="export-row"><select id="line-format" aria-label="Polyline export format"><option value="geojson">Lines · GeoJSON</option><option value="kml">Lines · KML</option><option value="csv">Vertices · CSV</option></select><button id="export-lines" class="secondary" disabled>Export</button></div>
+            <div class="export-row"><select id="image-format" aria-label="Image export format"><option value="png">Map view · PNG</option><option value="geotiff">Imagery · GeoTIFF</option><option value="worldfile">Imagery · PNG + worldfile</option></select><button id="export-image" class="secondary" disabled>Export</button></div>
+            <small>All lines export together. Images use the selected date and visible extent.</small>
+            <div id="save-status" class="save-status">✓ Traces stay in this browser</div>
+          </div>
+        </aside>
+        <section class="map-workspace" aria-label="Satellite imagery and drawing canvas">
+          <div class="map-toolbar"><span id="view-caption">FEBRUARY 28, 2026</span><div><label class="checkbox-label"><input id="town-labels" type="checkbox" checked /> Town labels</label><button id="reset-view" class="quiet" title="Fit Cape May County">↗ County view</button></div></div>
+          <div id="maps" class="maps">
+            <div class="map-pane" data-pane="2025-10-16" hidden><div class="pane-title earlier"><span><i></i><b>October 16, 2025</b><small>16:02 UTC · Sentinel-2B</small></span><button class="trace-date" data-date="2025-10-16">Trace this date</button></div><div id="map-earlier" class="map" tabindex="0" role="application" aria-label="October 16, 2025 satellite map. Use plus and minus to zoom and arrow keys to pan."></div><div class="loading-state" data-loading="2025-10-16" role="status"><span class="spinner"></span> Loading October imagery…</div></div>
+            <div class="map-pane selected" data-pane="2026-02-28"><div class="pane-title later"><span><i></i><b>February 28, 2026</b><small>16:02 UTC · Sentinel-2C</small></span><button class="trace-date" data-date="2026-02-28">Selected for tracing</button></div><div id="map-later" class="map" tabindex="0" role="application" aria-label="February 28, 2026 satellite map. Use plus and minus to zoom and arrow keys to pan."></div><div class="loading-state" data-loading="2026-02-28" role="status"><span class="spinner"></span> Loading February imagery…</div></div>
+          </div>
+          <div class="map-footer"><span id="coordinates">Move over the map to see coordinates</span><span id="resolution-note">10 m source pixels · exact acquisition dates</span></div>
+          <div id="map-hint" class="map-hint" hidden></div>
+          <div id="toast" class="toast" role="status" hidden></div>
+          <div id="download-card" class="download-card" hidden><span>YOUR FILE IS READY</span><a id="download-file" download>Download</a><button id="close-download" class="icon-button" aria-label="Close download link">×</button></div>
+          <div id="fatal-error" class="fatal-error" hidden></div>
+        </section>
+      </main>
+    </div>
+    <dialog id="about"><div class="dialog-header"><div class="eyebrow">KNOW YOUR SOURCE</div><button id="close-about" class="icon-button" aria-label="Close imagery information">×</button></div><h1>Two dates. The actual imagery.</h1><p>These are true-color Copernicus Sentinel-2 Level-2A images acquired on <strong>October 16, 2025</strong> and <strong>February 28, 2026</strong>, around 16:02 UTC (12:02 p.m. EDT and 11:02 a.m. EST).</p><p>Each date combines two adjoining 10-meter tiles. Zooming closer enlarges those pixels; it does not add detail. Water level, waves, ice, shadows and season can move or obscure the visible waterline. Traces are interpretations, not surveyed shorelines or a measurement of erosion.</p><div id="scene-details"></div><h2>Your exports</h2><p>GeoJSON, KML and CSV contain longitude/latitude coordinates (WGS 84), the imagery date, scene IDs and line length. The browser keeps your traces locally; export a copy before clearing browser data.</p><p>PNG includes visible traces, labels and an attribution strip. GeoTIFF and the PNG/worldfile ZIP contain imagery only, resampled to the current view in EPSG:3857. The ZIP includes a projection file and metadata. For original 10-meter data, use the full-scene GeoTIFF links above (large files).</p><p class="credit">Contains modified Copernicus Sentinel data (2025, 2026), served through <a href="https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a" target="_blank" rel="noopener">Element 84 Earth Search</a>. <a href="https://documentation.dataspace.copernicus.eu/Data/SentinelMissions/Sentinel2.html" target="_blank" rel="noopener">Sentinel-2 documentation</a>.</p></dialog>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
